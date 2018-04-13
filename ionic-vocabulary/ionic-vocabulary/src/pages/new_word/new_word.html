@@ -1,0 +1,91 @@
+<!--
+  Generated template for the NewPage page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>New Word</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+    <ion-fab top right edge>
+        <button ion-fab (click)="sendWord()">
+            <ion-icon name="checkmark"></ion-icon>
+        </button>
+    </ion-fab>
+
+    <ion-list>
+        <ion-list-header>
+            <strong>Principal information</strong>
+        </ion-list-header>
+
+        <ion-item>
+            <ion-icon name="paper" item-left></ion-icon>
+            <ion-input type="text" placeholder="New word" [(ngModel)]="txtNewWord"></ion-input>
+        </ion-item>
+
+        <button ion-item (click)="addDefinition()" color="secondary">
+            Add definition
+        </button>
+
+        <ion-item *ngFor="let currentDefinition of definitionList; let i = index;">
+            <ion-icon name="information-circle" item-left></ion-icon>
+            <strong>{{currentDefinition.type}}</strong> : {{currentDefinition.definition}}
+            <button ion-button outline item-right clear icon-left color="primary" (click)="deleteDefinition(i)">
+                <ion-icon name="trash" item-left></ion-icon>
+            </button>
+        </ion-item>
+    </ion-list>
+
+    <ion-list>
+        <ion-list-header>
+            <strong>Verb</strong>
+        </ion-list-header>
+
+        <ion-item>
+            <ion-icon name="book" item-left></ion-icon>
+            <ion-label floating>Base form</ion-label>
+            <ion-input type="text" placeholder="Base form of verb" [(ngModel)]="txtBaseForm"></ion-input>
+        </ion-item>
+
+        <ion-item>
+            <ion-icon name="book" item-left></ion-icon>
+            <ion-label floating>Preterite</ion-label>
+            <ion-input type="text" placeholder="Preterite of verb" [(ngModel)]="txtPreterite"></ion-input>
+        </ion-item>
+
+        <ion-item>
+            <ion-icon name="book" item-left></ion-icon>
+            <ion-label floating>Past participle</ion-label>
+            <ion-input type="text" placeholder="Past participle of verb" [(ngModel)]="txtPastParticiple"></ion-input>
+        </ion-item>
+
+    </ion-list>
+
+    <ion-list>
+        <ion-list-header>
+            <strong>Examples</strong>
+        </ion-list-header>
+
+        <button ion-item (click)="addExample()" color="secondary" >
+            Add an example
+        </button>
+
+        <ion-item *ngFor="let currentExample of exampleList; let i = index;">
+            <ion-icon name="bookmark" item-left></ion-icon>
+            {{currentExample}}
+            <button ion-button outline item-right clear icon-left color="primary" (click)="deleteExample(i)">
+                <ion-icon name="trash" item-left></ion-icon>
+            </button>
+        </ion-item>
+
+    </ion-list>
+
+</ion-content>
