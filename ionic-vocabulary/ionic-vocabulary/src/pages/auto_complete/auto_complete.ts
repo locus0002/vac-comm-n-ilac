@@ -7,6 +7,7 @@ import { PopoverMenuPage } from '../popover_menu/popover_menu';
 import { FiltersPage } from '../filters/filters';
 import { ShareP2PPage } from '../share_p2p/share_p2p';
 import { NotificationSchedulesPage } from '../notification_schedules/notification_schedules';
+import { WordViewPage } from '../word_view/word_view';
 import { Utils } from '../../services/utils';
 import * as Constants from '../../services/constants';
 import 'rxjs/add/operator/timeout';
@@ -31,6 +32,8 @@ export class AutoCompletePage {
     filteredWordAuxList: Array<any> = [];
     type: string;
     filtersActived: boolean = false;
+    filtersApplied: Array<string> = [];
+    filtersLabel: Array<string> = [];
 
     constructor(
                 public navCtrl: NavController, 
@@ -67,25 +70,26 @@ export class AutoCompletePage {
 
     filterWords(showVerbs: boolean, showAdjectives: boolean, showNouns: boolean, showAdverbs: boolean, showPhrases: boolean) {
 
-        let filters = [];
-        filters.findIndex
+        let that = this;
+        this.filtersApplied = [];
 
-        if (showVerbs) { filters.push(Constants.WORD_TYPE.Verb); }
-        if (showAdjectives) { filters.push(Constants.WORD_TYPE.Adjective); }
-        if (showNouns) { filters.push(Constants.WORD_TYPE.Noun); }
-        if (showAdverbs) { filters.push(Constants.WORD_TYPE.Adverb); }
-        if (showPhrases) { filters.push(Constants.WORD_TYPE.Phrase); }
+        if (showVerbs) { this.filtersApplied.push(Constants.WORD_TYPE.Verb); }
+        if (showAdjectives) { this.filtersApplied.push(Constants.WORD_TYPE.Adjective); }
+        if (showNouns) { this.filtersApplied.push(Constants.WORD_TYPE.Noun); }
+        if (showAdverbs) { this.filtersApplied.push(Constants.WORD_TYPE.Adverb); }
+        if (showPhrases) { this.filtersApplied.push(Constants.WORD_TYPE.Phrase); }
 
-        if (!(filters.length == 5)) {
+        if (!(this.filtersApplied.length == 5)) {
 
             this.filtersActived = true;
+            this.setFiltersLabel();
 
             this.filteredWordAuxList = this.currentWordList.filter(
                 function (wordElement) {
 
                     return wordElement.definitions.findIndex(
                         function (definitionElement) {
-                            return filters.findIndex(
+                            return that.filtersApplied.findIndex(
                                 function (filterElement) {
                                     return filterElement == definitionElement.type;
                                 }
@@ -97,6 +101,9 @@ export class AutoCompletePage {
             this.currentFilteredWordList = this.filteredWordAuxList;
         } else {
             this.filtersActived = false;
+            this.filtersApplied = [];
+            this.currentFilteredWordList = this.currentWordList;
+            this.setFiltersLabel();
         }
     }
 
@@ -188,6 +195,7 @@ export class AutoCompletePage {
             this.txtNewWord = currentWord.word;
         } else {
             console.log("View current word", currentWord);
+            this.navCtrl.push(WordViewPage, { currentWord: currentWord });
         }
         
     }
@@ -198,9 +206,14 @@ export class AutoCompletePage {
             FiltersPage,
             {
                 typeView: 'words',
-                parentPage: this
+                parentPage: this,
+                filtersApplied: this.filtersApplied
             }
         ).present();
+    }
+
+    setFiltersLabel() {
+        this.filtersLabel = this.filtersApplied.map(function (myFilter) { return Constants.WORD_TYPE_TEXT[myFilter] });
     }
 
     shareYourWords() {

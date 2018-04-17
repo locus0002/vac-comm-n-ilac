@@ -22216,6 +22216,10 @@ sub {
   }
 }
 
+page-auto_complete .badge_margin {
+  margin-right: 5px;
+}
+
 page-home .center {
   text-align: center;
 }

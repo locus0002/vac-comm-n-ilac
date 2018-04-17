@@ -14,6 +14,7 @@ import { Utils } from '../services/utils';
 import { PopoverMenuPage } from '../pages/popover_menu/popover_menu';
 import { FiltersPage } from '../pages/filters/filters';
 import { ShareP2PPage } from '../pages/share_p2p/share_p2p';
+import { WordViewPage } from '../pages/word_view/word_view';
 import { NotificationSchedulesPage } from '../pages/notification_schedules/notification_schedules';
 
 @NgModule({
@@ -29,7 +30,8 @@ import { NotificationSchedulesPage } from '../pages/notification_schedules/notif
         PopoverMenuPage,
         FiltersPage,
         ShareP2PPage,
-        NotificationSchedulesPage
+        NotificationSchedulesPage,
+        WordViewPage
     ],
     imports: [
         IonicModule.forRoot(MyApp)
@@ -47,7 +49,8 @@ import { NotificationSchedulesPage } from '../pages/notification_schedules/notif
         PopoverMenuPage,
         FiltersPage,
         ShareP2PPage,
-        NotificationSchedulesPage
+        NotificationSchedulesPage,
+        WordViewPage
     ],
     providers: [{ provide: ErrorHandler, useClass: IonicErrorHandler }, Push, Storage, Utils]
 })
