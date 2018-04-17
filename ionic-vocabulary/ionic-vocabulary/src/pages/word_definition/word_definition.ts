@@ -1,5 +1,6 @@
 ﻿import { Component } from '@angular/core';
 import { NavController, NavParams, ActionSheetController, Platform, AlertController, ViewController } from 'ionic-angular';
+import * as Constants from '../../services/constants';
 
 /*
   Generated class for the word_definition page.
@@ -15,7 +16,12 @@ export class WordDefinitionPage {
 
     txtNewWordType: string;
     txtDefinition: string;
-    definitionList: Array<{ type: string, definition: string }>;
+    definitionList: Array<any>;
+    type: string;
+    title: string;
+    placeHolder: string;
+    currentIndex: number;
+    currentObject: any;
 
     constructor(
                 public navCtrl: NavController,
@@ -26,26 +32,80 @@ export class WordDefinitionPage {
                 public viewCtrl: ViewController) { 
 
         this.definitionList = this.navParams.get("definitionList") || [];
+        this.type = this.navParams.get("type") || "";
+        this.title = this.navParams.get("title") || "";
+        this.placeHolder = this.navParams.get("placeholder") || "";
+        this.currentIndex = this.navParams.get("currentIndex");
+
+        if (this.currentIndex > -1) {
+
+            this.currentObject = this.definitionList[this.currentIndex];
+
+            switch (this.type) {
+
+                case Constants.VIEW_TYPE.EXAMPLE:
+                    this.txtDefinition = this.currentObject;
+                    break;
+
+                case Constants.VIEW_TYPE.DEFINITION:
+                    this.txtDefinition = this.currentObject.definition;
+                    this.txtNewWordType = this.currentObject.type;
+                    break;
+            }
+        }
     }
 
     addDefinition() {
 
-        if (this.txtDefinition && this.txtNewWordType) {
+        switch (this.type) {
+            case Constants.VIEW_TYPE.DEFINITION:
 
-            this.definitionList.push({
-                definition: this.txtDefinition,
-                type: this.txtNewWordType
-            });
+                if (this.txtDefinition && this.txtNewWordType) {
 
-            this.dismiss();
+                    if (this.currentIndex > -1) {
 
-        } else {
+                        this.currentObject.definition = this.txtDefinition;
+                        this.currentObject.type = this.txtNewWordType;
+                        this.definitionList[this.currentIndex] = this.currentObject;
+                    } else {
 
-            this.alertCtrl.create({
-                title: 'Validate',
-                subTitle: 'You need to fill all fields',
-                buttons: ["Aceptar"]
-            }).present();
+                        this.definitionList.push({
+                            definition: this.txtDefinition,
+                            type: this.txtNewWordType
+                        });
+                    }
+
+                    this.dismiss();
+
+                } else {
+
+                    this.alertCtrl.create({
+                        title: 'Validate',
+                        subTitle: 'You need to fill all fields',
+                        buttons: ["Aceptar"]
+                    }).present();
+                }
+
+                break;
+            case Constants.VIEW_TYPE.EXAMPLE:
+                if (this.txtDefinition) {
+
+                    if (this.currentIndex > -1) {
+                        this.definitionList[this.currentIndex] = this.txtDefinition;
+                    } else {
+                        this.definitionList.push(this.txtDefinition);
+                    }
+                    this.dismiss();
+
+                } else {
+
+                    this.alertCtrl.create({
+                        title: 'Validate',
+                        subTitle: 'You need to fill all fields',
+                        buttons: ["Aceptar"]
+                    }).present();
+                }
+                break;
         }
     }
 
@@ -88,6 +148,13 @@ export class WordDefinitionPage {
                     icon: !this.platform.is('ios') ? 'grid' : null,
                     handler: () => {
                         this.txtNewWordType = 'Adverb';
+                    }
+                },
+                {
+                    text: 'Phrase/Phrasal Verb',
+                    icon: !this.platform.is('ios') ? 'grid' : null,
+                    handler: () => {
+                        this.txtNewWordType = 'Phrase';
                     }
                 }
             ]

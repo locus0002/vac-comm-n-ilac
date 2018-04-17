@@ -16,7 +16,7 @@
 <ion-content>
 
     <ion-fab top right edge>
-        <button ion-fab (click)="sendWord()">
+        <button ion-fab (click)="sendWord()" color="secondary" >
             <ion-icon name="checkmark"></ion-icon>
         </button>
     </ion-fab>
@@ -26,20 +26,21 @@
             <strong>Principal information</strong>
         </ion-list-header>
 
-        <ion-item>
-            <ion-icon name="paper" item-left></ion-icon>
-            <ion-input type="text" placeholder="New word" [(ngModel)]="txtNewWord"></ion-input>
-        </ion-item>
+        <button ion-item text-wrap (click)="addWord()">
+            <ion-icon name="paper" item-left large></ion-icon>
+            <p>New Word</p>
+            <h2>{{txtNewWord}}</h2>
+        </button>
 
-        <button ion-item (click)="addDefinition()" color="secondary">
+        <button ion-item text-wrap (click)="addDefinition()" color="secondary">
             Add definition
         </button>
 
-        <ion-item *ngFor="let currentDefinition of definitionList; let i = index;">
+        <ion-item text-wrap *ngFor="let currentDefinition of definitionList; let i = index;">
             <ion-icon name="information-circle" item-left></ion-icon>
             <strong>{{currentDefinition.type}}</strong> : {{currentDefinition.definition}}
-            <button ion-button outline item-right clear icon-left color="primary" (click)="deleteDefinition(i)">
-                <ion-icon name="trash" item-left></ion-icon>
+            <button ion-button outline item-right clear icon-left color="primary" (click)="showPopMenu($event,i,'definition')">
+                <ion-icon name="more" item-left></ion-icon>
             </button>
         </ion-item>
     </ion-list>
@@ -78,11 +79,11 @@
             Add an example
         </button>
 
-        <ion-item *ngFor="let currentExample of exampleList; let i = index;">
+        <ion-item text-wrap *ngFor="let currentExample of exampleList; let i = index;">
             <ion-icon name="bookmark" item-left></ion-icon>
             {{currentExample}}
-            <button ion-button outline item-right clear icon-left color="primary" (click)="deleteExample(i)">
-                <ion-icon name="trash" item-left></ion-icon>
+            <button ion-button outline item-right clear icon-left color="primary" (click)="showPopMenu($event,i,'example')">
+                <ion-icon name="more" item-left></ion-icon>
             </button>
         </ion-item>
 

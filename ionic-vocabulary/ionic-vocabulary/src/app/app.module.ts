@@ -9,6 +9,12 @@ import { TabsPage } from '../pages/tabs/tabs';
 import { NewWordPage } from '../pages/new_word/new_word';
 import { Storage } from '@ionic/storage';
 import { WordDefinitionPage } from '../pages/word_definition/word_definition';
+import { AutoCompletePage } from '../pages/auto_complete/auto_complete';
+import { Utils } from '../services/utils';
+import { PopoverMenuPage } from '../pages/popover_menu/popover_menu';
+import { FiltersPage } from '../pages/filters/filters';
+import { ShareP2PPage } from '../pages/share_p2p/share_p2p';
+import { NotificationSchedulesPage } from '../pages/notification_schedules/notification_schedules';
 
 @NgModule({
     declarations: [
@@ -18,7 +24,12 @@ import { WordDefinitionPage } from '../pages/word_definition/word_definition';
         HomePage,
         TabsPage,
         NewWordPage,
-        WordDefinitionPage
+        WordDefinitionPage,
+        AutoCompletePage,
+        PopoverMenuPage,
+        FiltersPage,
+        ShareP2PPage,
+        NotificationSchedulesPage
     ],
     imports: [
         IonicModule.forRoot(MyApp)
@@ -31,8 +42,13 @@ import { WordDefinitionPage } from '../pages/word_definition/word_definition';
         HomePage,
         TabsPage,
         NewWordPage,
-        WordDefinitionPage
+        WordDefinitionPage,
+        AutoCompletePage,
+        PopoverMenuPage,
+        FiltersPage,
+        ShareP2PPage,
+        NotificationSchedulesPage
     ],
-    providers: [{ provide: ErrorHandler, useClass: IonicErrorHandler }, Push, Storage]
+    providers: [{ provide: ErrorHandler, useClass: IonicErrorHandler }, Push, Storage, Utils]
 })
 export class AppModule {}

@@ -3,19 +3,20 @@ import { Platform, AlertController } from 'ionic-angular';
 import { StatusBar, Splashscreen, Push, PushOptions, PushNotification } from 'ionic-native';
 import { TabsPage } from '../pages/tabs/tabs';
 import { NewWordPage } from '../pages/new_word/new_word';
+import { AutoCompletePage } from '../pages/auto_complete/auto_complete';
 
 @Component({
   templateUrl: 'app.html'
 })
 export class MyApp {
     //rootPage = TabsPage;
-    rootPage = NewWordPage;
+    //rootPage = NewWordPage;
+    rootPage = AutoCompletePage;
 
     constructor(
                 platform: Platform,
                 public alertCtrl:AlertController) {
 
-        console.log("Daleee...");
         platform.ready().then(() => {
             // Okay, so the platform is ready and our plugins are available.
             // Here you can do any higher level native things you might need.

@@ -1,0 +1,276 @@
+﻿import { Component } from '@angular/core';
+import { Storage } from '@ionic/storage'
+import { Http } from '@angular/http';
+import { NavController, NavParams, ViewController, AlertController, PopoverController, ModalController, LoadingController } from 'ionic-angular';
+import { NewWordPage } from '../new_word/new_word';
+import { PopoverMenuPage } from '../popover_menu/popover_menu';
+import { FiltersPage } from '../filters/filters';
+import { ShareP2PPage } from '../share_p2p/share_p2p';
+import { NotificationSchedulesPage } from '../notification_schedules/notification_schedules';
+import { Utils } from '../../services/utils';
+import * as Constants from '../../services/constants';
+import 'rxjs/add/operator/timeout';
+
+/*
+  Generated class for the auto_complete page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+*/
+@Component({
+    selector: 'page-auto_complete',
+    templateUrl: 'auto_complete.html'
+})
+export class AutoCompletePage {
+
+    txtNewWord: string = "";
+    txtKey: string;
+    title: string;
+    currentWordList: Array<any> = [];
+    currentFilteredWordList: Array<any> = [];
+    filteredWordAuxList: Array<any> = [];
+    type: string;
+    filtersActived: boolean = false;
+
+    constructor(
+                public navCtrl: NavController, 
+                public navParams: NavParams,
+                public viewCtrl:ViewController,
+                public utils:Utils,
+                public alertCtrl:AlertController,
+                public storage: Storage,
+                public popoverCtrl:PopoverController,
+                public modalCtrl:ModalController,
+                public http:Http,
+                public loadingCtrl:LoadingController) {
+
+        this.currentWordList = this.navParams.get("currentWordList") || [];
+        this.title = this.navParams.get("title") || "Your Words";
+        this.type = this.navParams.get("type") || "words";
+
+        if (this.type == 'words') {
+            this.getMyDictionary();
+        }
+    }
+
+    addWord() {
+        this.navCtrl.push(NewWordPage);
+    }
+
+    dismiss() {
+        this.viewCtrl.dismiss();
+    }
+
+    ionViewDidLoad() {
+        console.log('ionViewDidLoad auto_completePage');
+    }
+
+    filterWords(showVerbs: boolean, showAdjectives: boolean, showNouns: boolean, showAdverbs: boolean, showPhrases: boolean) {
+
+        let filters = [];
+        filters.findIndex
+
+        if (showVerbs) { filters.push(Constants.WORD_TYPE.Verb); }
+        if (showAdjectives) { filters.push(Constants.WORD_TYPE.Adjective); }
+        if (showNouns) { filters.push(Constants.WORD_TYPE.Noun); }
+        if (showAdverbs) { filters.push(Constants.WORD_TYPE.Adverb); }
+        if (showPhrases) { filters.push(Constants.WORD_TYPE.Phrase); }
+
+        if (!(filters.length == 5)) {
+
+            this.filtersActived = true;
+
+            this.filteredWordAuxList = this.currentWordList.filter(
+                function (wordElement) {
+
+                    return wordElement.definitions.findIndex(
+                        function (definitionElement) {
+                            return filters.findIndex(
+                                function (filterElement) {
+                                    return filterElement == definitionElement.type;
+                                }
+                            ) > -1;
+                        }
+                    ) > -1;
+                }
+            );
+            this.currentFilteredWordList = this.filteredWordAuxList;
+        } else {
+            this.filtersActived = false;
+        }
+    }
+
+    getMyDictionary() {
+
+        this.storage.get("MY_DICTIONARY")
+            .then((MY_DICTIONARY) => {
+                console.log("MY_DICTIONARY", MY_DICTIONARY);
+                if (MY_DICTIONARY) {
+                    if (MY_DICTIONARY.length > 0) {
+                        this.currentFilteredWordList = [];
+                        this.currentWordList = [];
+                        this.currentFilteredWordList = this.currentWordList = MY_DICTIONARY;
+                    }
+                }
+            })
+            .catch((error) => {
+                console.log("Error to get my dicctionary", error);
+            });
+    }
+
+    getWord(myEvent) {
+
+        if (this.filtersActived) {
+            this.currentFilteredWordList = this.filteredWordAuxList;
+        } else {
+            this.currentFilteredWordList = this.currentWordList;
+        }
+        let val = myEvent.target.value;
+
+        if (val) {
+            if (val.trim()) {
+                this.txtKey = '';
+                val = this.utils.buildKey(val);
+                if (this.filtersActived) {
+                    //we only search in own FILTERED words
+                    this.currentFilteredWordList = this.filteredWordAuxList.filter(function (item) {
+                        return (item.key.indexOf(val) > -1);
+                    });
+                } else {
+                    //we only search in own ALL words
+                    this.currentFilteredWordList = this.currentWordList.filter(function (item) {
+                        return (item.key.indexOf(val) > -1);
+                    });
+                }
+            }
+        }
+    }
+
+    getUnsynchronizeWords() {
+
+        return this.currentWordList.filter(function (myWord) {
+            return myWord.sent == false;
+        });
+    }
+
+    newWord() {
+
+        let valNewKey = this.utils.buildKey(this.txtNewWord);
+
+        if (this.txtKey) {
+            if (valNewKey == this.txtKey) {
+                this.viewCtrl.dismiss({ isNewWord: false, key: this.txtKey });
+            } else {
+                this.viewCtrl.dismiss({ isNewWord: true, newWord: this.txtNewWord });
+            }
+        } else {
+            let matches = this.currentFilteredWordList.filter(function (item) {
+                return (item.key == valNewKey);
+            });
+            if (matches.length > 0) {
+                this.viewCtrl.dismiss({ isNewWord: false, key: matches[0].key });
+            } else {
+                this.viewCtrl.dismiss({ isNewWord: true, newWord: this.txtNewWord });
+            }
+        }
+    }
+
+    notificationsConfiguration() {
+        this.modalCtrl.create(
+            NotificationSchedulesPage
+        ).present();
+    }
+
+    setWord(currentWord) {
+
+        if (this.type == 'new_word') {
+            this.txtKey = currentWord.key;
+            this.txtNewWord = currentWord.word;
+        } else {
+            console.log("View current word", currentWord);
+        }
+        
+    }
+
+    setFilters() {
+
+        this.modalCtrl.create(
+            FiltersPage,
+            {
+                typeView: 'words',
+                parentPage: this
+            }
+        ).present();
+    }
+
+    shareYourWords() {
+        this.modalCtrl.create(
+            ShareP2PPage
+        ).present();
+    }
+
+    showPopoverMenu(myEvent) {
+        this.popoverCtrl.create(
+            PopoverMenuPage,
+            {
+                typeView: 'words',
+                parent: this
+            }
+        ).present(
+            {
+                ev: myEvent
+            }
+        );
+    }
+
+    synchronizeWords() {
+
+        let loadBox = this.loadingCtrl.create({
+                content:'Synchronizing your words...'
+            }),
+            bodyData = JSON.stringify( this.getUnsynchronizeWords());
+
+        loadBox.present();
+
+        this.http.post(
+            Constants.CURRENT_HOST + 'synchronize',
+            bodyData,
+            Constants.HEADERS_OPTIONS
+        )
+            .timeout(10000, new Error('Time out execed, Please try later'))
+            .subscribe(data => {
+
+                loadBox.dismiss();
+                let response = data.json();
+                if (response.code == 200) {
+
+                    this.currentWordList = response.data;
+                    this.storage.set("MY_DICTIONARY", this.currentWordList);
+                    this.alertCtrl.create({
+                        title: 'Success',
+                        message: 'Words synchronized.',
+                        buttons: ["Ok"]
+                    }).present();
+                } else {
+
+                    this.alertCtrl.create({
+                        title: 'Error',
+                        message: 'Error: ' + response.msg
+                    }).present();
+                }
+
+            }, error => {
+
+                loadBox.dismiss();
+                console.log("SYNCHRONIZE_ERROR", error);
+
+                this.alertCtrl.create(
+                    {
+                        title: 'Error',
+                        message: 'Error: ' + error.message
+                    }
+                ).present();
+            });
+    }
+
+}

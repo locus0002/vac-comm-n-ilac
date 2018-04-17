@@ -6,13 +6,65 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>filters</ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title>Filters</ion-title>
+
+        <ion-buttons left>
+            <button ion-button icon-only (click)="dismiss()">
+                <span ion-text color="primary" showWhen="ios">Cancel</span>
+                <ion-icon name="arrow-back" showWhen="android,windows"></ion-icon>
+            </button>
+        </ion-buttons>
+
+        <ion-buttons right>
+            <button ion-button icon-only (click)="setFilters()">
+                <span ion-text color="primary" showWhen="ios">Filter</span>
+                <ion-icon name="checkmark" showWhen="android,windows"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
+<ion-content>
+    <ion-list>
+        <ion-list-header>
+            <strong>You can choose what words will be shown</strong>
+        </ion-list-header>
+
+        <ion-item>
+            <ion-label>Verbs</ion-label>
+            <ion-toggle checked="true" [(ngModel)]="showVerbs"></ion-toggle>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Adjectives</ion-label>
+            <ion-toggle checked="true" [(ngModel)]="showAdjectives"></ion-toggle>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Nouns</ion-label>
+            <ion-toggle checked="true" [(ngModel)]="showNouns"></ion-toggle>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Adverbs</ion-label>
+            <ion-toggle checked="true" [(ngModel)]="showAdverbs"></ion-toggle>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Phrase/Phrasal Verb</ion-label>
+            <ion-toggle checked="true" [(ngModel)]="showPhrases"></ion-toggle>
+        </ion-item>
+
+    </ion-list>
+
+    <ion-list>
+        <button ion-item text-center (click)="setFilters()" color="secondary" >
+            <ion-icon name="options"></ion-icon>
+            Set Filters
+        </button>
+    </ion-list>
 
 </ion-content>

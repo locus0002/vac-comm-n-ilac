@@ -1,8 +1,11 @@
 ﻿import { Component } from '@angular/core';
 import { Http } from '@angular/http';
 import { Storage } from '@ionic/storage';
-import { NavController, NavParams, ActionSheetController, Platform, AlertController, LoadingController, ModalController } from 'ionic-angular';
+import { NavController, NavParams, ActionSheetController, Platform, AlertController, LoadingController, ModalController, PopoverController } from 'ionic-angular';
 import { WordDefinitionPage } from '../word_definition/word_definition';
+import { AutoCompletePage } from '../auto_complete/auto_complete';
+import { PopoverMenuPage } from '../popover_menu/popover_menu';
+import { Utils } from '../../services/utils';
 import * as Constanst from '../../services/constants';
 import 'rxjs/add/operator/timeout';
 
@@ -20,11 +23,11 @@ export class NewWordPage {
 
     exampleList: Array<string> = [];
     definitionList: Array<{ type: string, definition: string }> = [];
-    txtNewWord: string;
+    txtNewWord: string = "";
     txtBaseForm: string;
     txtPreterite: string;
     txtPastParticiple: string;
-    myDicctionary: Object;
+    myDicctionary: Array<any>;
 
     constructor(
                 public navCtrl: NavController,
@@ -35,57 +38,74 @@ export class NewWordPage {
                 public loadingCtrl:LoadingController,
                 public http:Http,
                 public storage:Storage,
-                public modalCtrl:ModalController) { 
+                public modalCtrl:ModalController,
+                public utils:Utils,
+                public popoverCtrl:PopoverController) { 
 
         this.getMyDictionary();
     }
 
     addDefinition() {
-        this.modalCtrl.create(WordDefinitionPage, { definitionList: this.definitionList }).present();
+        if (this.validateNewWord()) {
+
+            this.modalCtrl.create(WordDefinitionPage, { definitionList: this.definitionList, type: Constanst.VIEW_TYPE.DEFINITION, title:'Definition', placeholder:'Your definition' }).present();
+        } else {
+
+            this.alertCtrl.create({
+                title: 'Existing word!',
+                subTitle: 'Would you like to review this word?',
+                buttons: [
+                    {
+                        text: 'Cancel',
+                        rol:'cancel'
+                    },
+                    {
+                        text: 'Review',
+                        handler: () => {
+                            console.log('TODO review existing word');
+                            //TODO review existing word
+                        }
+                    }
+                ]
+            }).present();
+        }
     }
 
     addExample() {
 
-        this.alertCtrl.create({
-            title: 'New Example',
-            subTitle: 'Add examples as much as you can',
-            inputs: [
-                {
-                    name: 'txtNewExample',
-                    placeholder:'Type your example'
-                }
-            ],
-            buttons: [
-                {
-                    text: 'Cancel',
-                    role: 'cancel',
-                    handler: () => { console.log("Operation canceled");  }
-                },
-                {
-                    text: 'Add',
-                    handler: (data) => {
-                        if (data.txtNewExample) {
-                            this.exampleList.push(data.txtNewExample);
-                        }
+        this.modalCtrl.create(WordDefinitionPage, { definitionList: this.exampleList, type: Constanst.VIEW_TYPE.EXAMPLE, title: 'Example', placeholder: 'Your example' }).present();
+    }
+
+    addWord() {
+        
+        let newWordModal = this.modalCtrl.create(AutoCompletePage, { currentWordList: this.myDicctionary, title: 'New Word', type:'new_word' });
+
+        newWordModal.onDidDismiss(
+            data => {
+                if (data) {
+                    if (data.isNewWord) {
+                        this.txtNewWord = data.newWord;
+                    } else {
+                        //TODO show the word in view mode
+                        console.log('TODO review existing word');
                     }
                 }
-            ]
-        }).present();
+            }
+        );
+
+        newWordModal.present();
     }
 
     buildWordJSON() {
         if (this.definitionList.length > 0
             && this.txtNewWord) {
 
-            let key = this.txtNewWord.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-            key = key.replace(/[^A-Z0-9]/ig, "");
-            key = key.toLowerCase();
-
             let newWordData = {
                     definitions: this.definitionList.map(function (currentDef) { return { type: Constanst.WORD_TYPE[currentDef.type], definition: currentDef.definition } }),
                     word: this.txtNewWord,
-                    key: key,
-                    sent:false
+                    key: this.utils.buildKey(this.txtNewWord),
+                    sent:false,
+                    validated:false
                 };
 
             let hasVerb = this.definitionList.findIndex(function (currentDef) { return currentDef.type == 'Verb' });
@@ -160,14 +180,46 @@ export class NewWordPage {
         }).present();
     }
 
+    editElement(index: number, type: string) {
+
+        switch (Constanst.VIEW_TYPE_LOW[type]) {
+
+            case Constanst.VIEW_TYPE.EXAMPLE:
+
+                this.modalCtrl.create(
+                    WordDefinitionPage,
+                    {
+                        definitionList: this.exampleList,
+                        type: Constanst.VIEW_TYPE.EXAMPLE,
+                        title: 'Example',
+                        placeholder: 'Your example',
+                        currentIndex: index
+                    }).present();
+
+                break;
+            case Constanst.VIEW_TYPE.DEFINITION:
+
+                this.modalCtrl.create(
+                    WordDefinitionPage,
+                    {
+                        definitionList: this.definitionList,
+                        type: Constanst.VIEW_TYPE.DEFINITION,
+                        title: 'Definition',
+                        placeholder: 'Your definition',
+                        currentIndex: index
+                    }).present();
+                break;
+        }
+    }
+
     getMyDictionary() {
 
-        this.myDicctionary = {};
-
+        this.myDicctionary = [];
         this.storage.get("MY_DICTIONARY")
             .then((MY_DICTIONARY) => {
+                console.log("MY_DICTIONARY", MY_DICTIONARY);
                 if (MY_DICTIONARY) {
-                    if (Object.keys(MY_DICTIONARY).length > 0) {
+                    if (MY_DICTIONARY.length > 0) {
                         this.myDicctionary = MY_DICTIONARY;
                     }
                 }
@@ -182,7 +234,22 @@ export class NewWordPage {
     }
 
     saveWord(newWordJSON: any) {
-        this.storage
+
+        this.myDicctionary.push(newWordJSON);
+        this.storage.set("MY_DICTIONARY", this.myDicctionary).then(() => {
+
+            this.alertCtrl.create({
+                title: 'Success',
+                message: 'Word saved successfully.',
+                buttons:["Ok"]
+            }).present();
+            this.exampleList = [];
+            this.definitionList = [];
+            this.txtNewWord = "";
+            this.txtBaseForm = "";
+            this.txtPastParticiple = "";
+            this.txtPreterite = "";
+        });
     }
 
     sendWord() {
@@ -192,16 +259,7 @@ export class NewWordPage {
             }),
             newWordJSON = this.buildWordJSON();
 
-        console.log("Data JSON", newWordJSON);
         if (newWordJSON != null) {
-
-            /*if (this.myDicctionary.hasOwnProperty(newWordJSON.key)) {
-                
-            }*/
-
-            /*
-             * TODO i need to validate if the word that we are saving already exist and wether user wants to overwrite
-             */
 
             this.alertCtrl.create({
                 title: 'Share',
@@ -209,8 +267,11 @@ export class NewWordPage {
                 message: 'Your word will need an approbation',
                 buttons: [
                     {
-                        text: 'Cancel',
-                        role: 'cancel'
+                        text: 'No',
+                        role: 'cancel',
+                        handler: () => {
+                            this.saveWord(newWordJSON);
+                        }
                     },
                     {
                         text: 'Share',
@@ -231,7 +292,8 @@ export class NewWordPage {
                                             subTitle: 'Your word was received successful',
                                             buttons: ["Ok"]
                                         }).present();
-
+                                        newWordJSON.sent = true;
+                                        this.saveWord(newWordJSON);
                                     } else {
 
                                         this.alertCtrl.create({
@@ -255,6 +317,33 @@ export class NewWordPage {
                 ]
             }).present();
         }
+    }
+
+    showPopMenu(myEvent: any, index: number, type: string) {
+        
+        this.popoverCtrl.create(
+            PopoverMenuPage,
+            {
+                index: index,
+                type: type,
+                typeView: 'autocomplete',
+                parent: this
+            }
+        ).present({ ev: myEvent });
+    }
+
+    validateNewWord() {
+
+        let key = this.utils.buildKey(this.txtNewWord);
+        if (key) {
+            let index = this.myDicctionary.findIndex(function (element) {
+                return key == element.key;
+            });
+            if( index > -1 ){
+                return false;
+            }
+        }
+        return true;
     }
 
 }

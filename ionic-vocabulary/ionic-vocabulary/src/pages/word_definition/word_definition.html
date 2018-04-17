@@ -7,7 +7,7 @@
 <ion-header>
 
     <ion-navbar>
-        <ion-title>Definition</ion-title>
+        <ion-title>{{title}}</ion-title>
         <ion-buttons start>
             <button ion-button (click)="dismiss()">
                 <span ion-text color="primary" showWhen="ios">Cancel</span>
@@ -23,7 +23,7 @@
 
     <ion-list>
 
-        <ion-item>
+        <ion-item *ngIf="type == 'D'">
             <ion-icon name="information-circle" item-left></ion-icon>
             <ion-input type="text" readonly="true" placeholder="Type" [(ngModel)]="txtNewWordType"></ion-input>
             <button ion-button outline item-right icon-left clear (click)="showTypeWordMenu()">
@@ -31,13 +31,13 @@
             </button>
         </ion-item>
 
-        <ion-item>
+        <ion-item text-wrap>
             <ion-icon name="information-circle" item-left></ion-icon>
-            <ion-input type="text" placeholder="You definition" [(ngModel)]="txtDefinition"></ion-input>
+            <ion-textarea type="text" [placeholder]="placeHolder" [(ngModel)]="txtDefinition"></ion-textarea>
         </ion-item>
 
         <button ion-item (click)="addDefinition()" color="secondary">
-            Save
+            Add
         </button>
 
     </ion-list>
