@@ -13,11 +13,88 @@
 </ion-header>
 
 
-<ion-content padding>
+<ion-content>
+
     <ion-fab bottom right>
         <button ion-fab color="secondary" (click)="editWord()">
             <ion-icon name="create"></ion-icon>
         </button>
     </ion-fab>
+
+    <ion-list>
+        <ion-list-header>
+            <strong>Information</strong>
+        </ion-list-header>
+
+        <ion-item text-wrap>
+            <ion-icon name="paper" item-left large></ion-icon>
+            <p>Your Word</p>
+            <h2>{{currentWord.word}}</h2>
+        </ion-item>
+
+        <ion-item text-wrap *ngFor="let currentDefinition of definitionList">
+            <ion-icon name="information-circle" item-left></ion-icon>
+            <strong>{{currentDefinition.type}}</strong> : {{currentDefinition.definition}}
+        </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="hasVerbDefinition == true">
+        <ion-list-header>
+            <strong>Verb</strong>
+        </ion-list-header>
+
+        <ion-item text-wrap>
+            <ion-icon name="book" item-left></ion-icon>
+            <p>Base form</p>
+            <h2>{{currentWord.conjugation.base}}</h2>
+        </ion-item>
+
+        <ion-item text-wrap>
+            <ion-icon name="book" item-left></ion-icon>
+            <p>Past</p>
+            <h2>{{currentWord.conjugation.past}}</h2>
+        </ion-item>
+
+        <ion-item text-wrap>
+            <ion-icon name="book" item-left></ion-icon>
+            <p>Past participle (P.P.)</p>
+            <h2>{{currentWord.conjugation.pp}}</h2>
+        </ion-item>
+
+    </ion-list>
+
+    <ion-list *ngIf="hasVerbDefinition == false">
+        <ion-list-header>
+            This word does not have a <strong>Verb</strong> definition
+        </ion-list-header>
+
+    </ion-list>
+
+    <ion-list *ngIf="currentWord.examples.length > 0">
+        <ion-list-header>
+            <strong>Examples</strong>
+        </ion-list-header>
+
+        <ion-item text-wrap *ngFor="let currentExample of currentWord.examples">
+            <ion-icon name="bookmark" item-left></ion-icon>
+            {{currentExample}}
+        </ion-item>
+
+    </ion-list>
+
+    <ion-list *ngIf="currentWord.examples.length == 0">
+        <ion-list-header>
+            This word does not have <strong>Examples</strong>
+        </ion-list-header>
+
+    </ion-list>
+
+    <br />
+    <p>
+        <button ion-button color="danger" full icon-right (click)="showDeleteConfirmation(currentWord.key)" >
+            Delete word
+            <ion-icon name="trash"></ion-icon>
+        </button>
+    </p>
 
 </ion-content>

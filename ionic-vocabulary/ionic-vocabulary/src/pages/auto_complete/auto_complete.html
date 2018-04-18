@@ -33,7 +33,7 @@
 
     <ion-toolbar>
         <ion-searchbar color="primary" [(ngModel)]="txtNewWord" [placeholder]="title" [autocomplete]="on" (ionInput)="getWord($event)"></ion-searchbar>
-        <ion-title *ngIf="filtersApplied.length == 0 || filtersApplied.length == 5" ><small>Filters</small></ion-title>
+        <ion-title *ngIf="type == 'words' && (filtersApplied.length == 0 || filtersApplied.length == 5)" ><small>Filters</small></ion-title>
         <ion-title *ngIf="filtersApplied.length != 0 && filtersApplied.length != 5">
             <small>Filters</small>&nbsp;
             <ion-badge color="secondary" class="badge_margin" *ngFor="let myFilter of filtersLabel">
@@ -55,8 +55,8 @@
     </ion-fab>
 
     <ion-list>
-        <ion-item *ngFor="let item of currentFilteredWordList" (click)="setWord(item)">
+        <button ion-item *ngFor="let item of currentFilteredWordList" (click)="setWord(item)">
             {{item.word}}
-        </ion-item>
+        </button>
     </ion-list>
 </ion-content>

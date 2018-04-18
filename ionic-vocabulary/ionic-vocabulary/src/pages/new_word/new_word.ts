@@ -1,10 +1,11 @@
 ﻿import { Component } from '@angular/core';
 import { Http } from '@angular/http';
 import { Storage } from '@ionic/storage';
-import { NavController, NavParams, ActionSheetController, Platform, AlertController, LoadingController, ModalController, PopoverController } from 'ionic-angular';
+import { NavController, NavParams, ActionSheetController, Platform, AlertController, LoadingController, ModalController, PopoverController, Events } from 'ionic-angular';
 import { WordDefinitionPage } from '../word_definition/word_definition';
 import { AutoCompletePage } from '../auto_complete/auto_complete';
 import { PopoverMenuPage } from '../popover_menu/popover_menu';
+import { WordViewPage } from '../word_view/word_view';
 import { Utils } from '../../services/utils';
 import * as Constanst from '../../services/constants';
 import 'rxjs/add/operator/timeout';
@@ -28,6 +29,7 @@ export class NewWordPage {
     txtPreterite: string;
     txtPastParticiple: string;
     myDicctionary: Array<any>;
+    currentWord: any;
 
     constructor(
                 public navCtrl: NavController,
@@ -40,15 +42,30 @@ export class NewWordPage {
                 public storage:Storage,
                 public modalCtrl:ModalController,
                 public utils:Utils,
-                public popoverCtrl:PopoverController) { 
+                public popoverCtrl:PopoverController,
+                public events:Events) { 
 
         this.getMyDictionary();
+        this.currentWord = this.navParams.get("currentWord") || null;
+
+        if (this.currentWord != null) {
+
+            this.exampleList = this.currentWord.examples;
+            this.definitionList = this.currentWord.definitions.map(function (definitionElmt) { return { type: Constanst.WORD_TYPE_TEXT[definitionElmt.type], definition: definitionElmt.definition } });
+            this.txtNewWord = this.currentWord.word;
+            if (this.currentWord.conjugation != null) {
+                this.txtBaseForm = this.currentWord.conjugation.base;
+                this.txtPreterite = this.currentWord.conjugation.past;
+                this.txtPastParticiple = this.currentWord.conjugation.pp;
+            }
+            
+        }
     }
 
     addDefinition() {
         if (this.validateNewWord()) {
 
-            this.modalCtrl.create(WordDefinitionPage, { definitionList: this.definitionList, type: Constanst.VIEW_TYPE.DEFINITION, title:'Definition', placeholder:'Your definition' }).present();
+            this.modalCtrl.create(WordDefinitionPage, { definitionList: this.definitionList, type: Constanst.VIEW_TYPE.DEFINITION, title: 'Definition: ' + (this.txtNewWord || ''), placeholder: 'Your definition' }).present();
         } else {
 
             this.alertCtrl.create({
@@ -78,7 +95,7 @@ export class NewWordPage {
 
     addWord() {
         
-        let newWordModal = this.modalCtrl.create(AutoCompletePage, { currentWordList: this.myDicctionary, title: 'New Word', type:'new_word' });
+        let newWordModal = this.modalCtrl.create(AutoCompletePage, { currentWordList: this.myDicctionary, title: 'New Word', type:'new_word', newWordParent:this });
 
         newWordModal.onDidDismiss(
             data => {
@@ -102,6 +119,7 @@ export class NewWordPage {
 
             let newWordData = {
                     definitions: this.definitionList.map(function (currentDef) { return { type: Constanst.WORD_TYPE[currentDef.type], definition: currentDef.definition } }),
+                    examples: this.exampleList,
                     word: this.txtNewWord,
                     key: this.utils.buildKey(this.txtNewWord),
                     sent:false,
@@ -126,6 +144,8 @@ export class NewWordPage {
                         subTitle: 'Your word is a verb, you need to fill these fields [Base form, Definition & Word]',
                         buttons: ["Aceptar"]
                     }).present();
+
+                    return null;
                 }
             } else {
                 newWordData['conjugation'] = null;
@@ -156,7 +176,15 @@ export class NewWordPage {
                 },
                 {
                     text: 'Delete',
-                    handler: () => { this.definitionList.splice(currentIndex, 1); }
+                    handler: () => {
+                        this.definitionList.splice(currentIndex, 1);
+                        let hasVerb = this.definitionList.findIndex(function (currentDef) { return currentDef.type == 'Verb' });
+                        if (hasVerb == -1) {
+                            this.txtBaseForm = '';
+                            this.txtPastParticiple = '';
+                            this.txtPreterite = '';
+                        }
+                    }
                 }
             ]
         }).present();
@@ -217,7 +245,6 @@ export class NewWordPage {
         this.myDicctionary = [];
         this.storage.get("MY_DICTIONARY")
             .then((MY_DICTIONARY) => {
-                console.log("MY_DICTIONARY", MY_DICTIONARY);
                 if (MY_DICTIONARY) {
                     if (MY_DICTIONARY.length > 0) {
                         this.myDicctionary = MY_DICTIONARY;
@@ -234,22 +261,43 @@ export class NewWordPage {
     }
 
     saveWord(newWordJSON: any) {
+        
+        if (this.currentWord != null) {
 
-        this.myDicctionary.push(newWordJSON);
-        this.storage.set("MY_DICTIONARY", this.myDicctionary).then(() => {
-
+            let that = this,
+                wordIndex = this.myDicctionary.findIndex(
+                    function (wordElemnt) {
+                        return wordElemnt.key == that.currentWord.key;
+                    });
+            this.myDicctionary[wordIndex] = newWordJSON;
+            this.storage.set("MY_DICTIONARY", this.myDicctionary);
             this.alertCtrl.create({
                 title: 'Success',
-                message: 'Word saved successfully.',
-                buttons:["Ok"]
+                message: 'Word updated successfully.',
+                buttons: ["Ok"]
             }).present();
-            this.exampleList = [];
-            this.definitionList = [];
-            this.txtNewWord = "";
-            this.txtBaseForm = "";
-            this.txtPastParticiple = "";
-            this.txtPreterite = "";
-        });
+            this.events.publish('word:updated', newWordJSON);
+            this.navCtrl.pop();
+        } else {
+
+            this.myDicctionary.push(newWordJSON);
+            this.events.publish('word:created', newWordJSON);
+            this.storage.set("MY_DICTIONARY", this.myDicctionary).then(() => {
+
+                this.alertCtrl.create({
+                    title: 'Success',
+                    message: 'Word saved successfully.',
+                    buttons: ["Ok"]
+                }).present();
+                this.exampleList = [];
+                this.definitionList = [];
+                this.txtNewWord = "";
+                this.txtBaseForm = "";
+                this.txtPastParticiple = "";
+                this.txtPreterite = "";
+            });
+        }
+        
     }
 
     sendWord() {
@@ -332,15 +380,23 @@ export class NewWordPage {
         ).present({ ev: myEvent });
     }
 
+    showWord(wordSelected: any) {
+
+        this.navCtrl.pop();
+        this.navCtrl.push(WordViewPage, { currentWord: wordSelected });
+    }
+
     validateNewWord() {
 
-        let key = this.utils.buildKey(this.txtNewWord);
-        if (key) {
-            let index = this.myDicctionary.findIndex(function (element) {
-                return key == element.key;
-            });
-            if( index > -1 ){
-                return false;
+        if (this.currentWord == null) {
+            let key = this.utils.buildKey(this.txtNewWord);
+            if (key) {
+                let index = this.myDicctionary.findIndex(function (element) {
+                    return key == element.key;
+                });
+                if (index > -1) {
+                    return false;
+                }
             }
         }
         return true;

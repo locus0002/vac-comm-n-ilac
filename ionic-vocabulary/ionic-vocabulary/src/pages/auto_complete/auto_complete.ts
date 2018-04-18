@@ -1,7 +1,7 @@
 ﻿import { Component } from '@angular/core';
 import { Storage } from '@ionic/storage'
 import { Http } from '@angular/http';
-import { NavController, NavParams, ViewController, AlertController, PopoverController, ModalController, LoadingController } from 'ionic-angular';
+import { NavController, NavParams, ViewController, AlertController, PopoverController, ModalController, LoadingController, Events } from 'ionic-angular';
 import { NewWordPage } from '../new_word/new_word';
 import { PopoverMenuPage } from '../popover_menu/popover_menu';
 import { FiltersPage } from '../filters/filters';
@@ -34,6 +34,11 @@ export class AutoCompletePage {
     filtersActived: boolean = false;
     filtersApplied: Array<string> = [];
     filtersLabel: Array<string> = [];
+    newWordParent: any;
+    deletedFlag: boolean = true;
+    updatedFlag: boolean = true;
+    createdFlag: boolean = true;
+
 
     constructor(
                 public navCtrl: NavController, 
@@ -45,11 +50,13 @@ export class AutoCompletePage {
                 public popoverCtrl:PopoverController,
                 public modalCtrl:ModalController,
                 public http:Http,
-                public loadingCtrl:LoadingController) {
+                public loadingCtrl:LoadingController,
+                public events:Events) {
 
         this.currentWordList = this.navParams.get("currentWordList") || [];
         this.title = this.navParams.get("title") || "Your Words";
         this.type = this.navParams.get("type") || "words";
+        this.newWordParent = this.navParams.get("newWordParent") || null;
 
         if (this.type == 'words') {
             this.getMyDictionary();
@@ -62,10 +69,6 @@ export class AutoCompletePage {
 
     dismiss() {
         this.viewCtrl.dismiss();
-    }
-
-    ionViewDidLoad() {
-        console.log('ionViewDidLoad auto_completePage');
     }
 
     filterWords(showVerbs: boolean, showAdjectives: boolean, showNouns: boolean, showAdverbs: boolean, showPhrases: boolean) {
@@ -111,7 +114,6 @@ export class AutoCompletePage {
 
         this.storage.get("MY_DICTIONARY")
             .then((MY_DICTIONARY) => {
-                console.log("MY_DICTIONARY", MY_DICTIONARY);
                 if (MY_DICTIONARY) {
                     if (MY_DICTIONARY.length > 0) {
                         this.currentFilteredWordList = [];
@@ -160,6 +162,47 @@ export class AutoCompletePage {
         });
     }
 
+    ionViewDidLoad() {
+        console.log('ionViewDidLoad auto_completePage');
+    }
+
+    ionViewDidEnter() {
+        console.log("ionViewDidEnter_autocomplete");
+        this.events.subscribe('word:updated', (wordParam) => {
+            if (wordParam && this.updatedFlag) {
+
+                let wordIndex = this.currentWordList.findIndex(
+                        function (wordElemnt) {
+                            return wordElemnt.key == wordParam.key;
+                    });
+                this.currentWordList[wordIndex] = wordParam;
+                this.updatedFlag = false;
+                this.events.unsubscribe('word:updated');
+            }
+        });
+
+        this.events.subscribe('word:created', (wordParam) => {
+            if (wordParam && this.createdFlag) {
+                this.currentWordList.push(wordParam);
+                this.createdFlag = false;
+                this.events.unsubscribe('word:created');
+            }
+        });
+
+        this.events.subscribe('word:deleted', (wordKey) => {
+            if (wordKey && this.deletedFlag) {
+                
+                let wordIndex = this.currentWordList.findIndex(
+                    function (wordElemnt) {
+                        return wordElemnt.key == wordKey;
+                    });
+                this.currentWordList.splice(wordIndex, 1);
+                this.deletedFlag = false;
+                this.events.unsubscribe('word:deleted');
+            }
+        });
+    }
+
     newWord() {
 
         let valNewKey = this.utils.buildKey(this.txtNewWord);
@@ -191,8 +234,8 @@ export class AutoCompletePage {
     setWord(currentWord) {
 
         if (this.type == 'new_word') {
-            this.txtKey = currentWord.key;
-            this.txtNewWord = currentWord.word;
+            this.dismiss();
+            this.newWordParent.showWord(currentWord);
         } else {
             console.log("View current word", currentWord);
             this.navCtrl.push(WordViewPage, { currentWord: currentWord });
