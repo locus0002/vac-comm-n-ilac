@@ -24,6 +24,7 @@ export class NewWordPage {
 
     exampleList: Array<string> = [];
     definitionList: Array<{ type: string, definition: string }> = [];
+    newWordList: Array<any> = [];
     txtNewWord: string = "";
     txtBaseForm: string;
     txtPreterite: string;
@@ -260,6 +261,11 @@ export class NewWordPage {
         console.log('ionViewDidLoad new_wordPage');
     }
 
+    ionViewDidLeave() {
+        console.log('ionViewDidLeave new_wordPage');
+        if (this.newWordList.length > 0) { this.events.publish('word:created', this.newWordList); }
+    }
+
     saveWord(newWordJSON: any) {
         
         if (this.currentWord != null) {
@@ -267,8 +273,10 @@ export class NewWordPage {
             let that = this,
                 wordIndex = this.myDicctionary.findIndex(
                     function (wordElemnt) {
-                        return wordElemnt.key == that.currentWord.key;
+                        return wordElemnt.internalId == that.currentWord.internalId;
                     });
+
+            newWordJSON['internalId'] = this.currentWord.internalId;
             this.myDicctionary[wordIndex] = newWordJSON;
             this.storage.set("MY_DICTIONARY", this.myDicctionary);
             this.alertCtrl.create({
@@ -280,8 +288,11 @@ export class NewWordPage {
             this.navCtrl.pop();
         } else {
 
+            newWordJSON['internalId'] = this.myDicctionary.length == 0 ? 1 : (this.myDicctionary.length + 1);
             this.myDicctionary.push(newWordJSON);
-            this.events.publish('word:created', newWordJSON);
+            this.newWordList.push(newWordJSON);
+            /*this.newWordList[0] = newWordJSON;
+            this.events.publish('word:created', this.newWordList);*/
             this.storage.set("MY_DICTIONARY", this.myDicctionary).then(() => {
 
                 this.alertCtrl.create({

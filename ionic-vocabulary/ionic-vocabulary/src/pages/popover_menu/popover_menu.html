@@ -20,19 +20,15 @@
 
         <!-- POPOVER MENU of All words -->
         <button ion-item (click)="setFilters()" *ngIf="typeView == 'words'">
-            <ion-icon name="options" item-left></ion-icon>
             Filter
         </button>
         <button ion-item (click)="sharePtwoP()" *ngIf="typeView == 'words'">
-            <ion-icon name="share-alt" item-left></ion-icon>
             Share P2P
         </button>
         <button ion-item (click)="synchronize()" *ngIf="typeView == 'words'">
-            <ion-icon name="cloud-upload" item-left></ion-icon>
             Synchronize
         </button>
         <button ion-item (click)="notifications()" *ngIf="typeView == 'words'">
-            <ion-icon name="notifications" item-left></ion-icon>
             Notifications
         </button>
     </ion-list>

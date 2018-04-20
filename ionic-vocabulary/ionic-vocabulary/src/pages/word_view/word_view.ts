@@ -42,7 +42,7 @@ export class WordViewPage {
         this.validateVerbDefinition();
     }
 
-    deleteWord(wordKey: string) {
+    deleteWord(wordKey: number) {
 
         let loadBox = this.loadingCtrl.create({
                 content:'Deleting word...'
@@ -54,7 +54,7 @@ export class WordViewPage {
                 if (MY_DICTIONARY) {
                     let deleteIndex = MY_DICTIONARY.findIndex(
                         function (wordElemnt) {
-                            return wordElemnt.key == wordKey;
+                            return wordElemnt.internalId == wordKey;
                         }
                     );
                     if (deleteIndex > -1) {
@@ -117,7 +117,7 @@ export class WordViewPage {
         console.log('ionViewDidLoad word_viewPage');
     }
 
-    showDeleteConfirmation(wordKey: string) {
+    showDeleteConfirmation(wordKey: number) {
         this.actionSheetCtrl.create({
             title: 'Delete Word',
             subTitle: 'Are you sure that you wish to delete this word?',

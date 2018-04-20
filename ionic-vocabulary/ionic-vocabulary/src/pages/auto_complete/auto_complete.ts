@@ -35,10 +35,6 @@ export class AutoCompletePage {
     filtersApplied: Array<string> = [];
     filtersLabel: Array<string> = [];
     newWordParent: any;
-    deletedFlag: boolean = true;
-    updatedFlag: boolean = true;
-    createdFlag: boolean = true;
-
 
     constructor(
                 public navCtrl: NavController, 
@@ -116,6 +112,7 @@ export class AutoCompletePage {
             .then((MY_DICTIONARY) => {
                 if (MY_DICTIONARY) {
                     if (MY_DICTIONARY.length > 0) {
+
                         this.currentFilteredWordList = [];
                         this.currentWordList = [];
                         this.currentFilteredWordList = this.currentWordList = MY_DICTIONARY;
@@ -167,40 +164,55 @@ export class AutoCompletePage {
     }
 
     ionViewDidEnter() {
-        console.log("ionViewDidEnter_autocomplete");
-        this.events.subscribe('word:updated', (wordParam) => {
-            if (wordParam && this.updatedFlag) {
+        console.log('ionViewDidEnter auto_completePage'); 
+    }
 
-                let wordIndex = this.currentWordList.findIndex(
+    ionViewWillEnter() {
+
+        console.log('type View: ' + this.type);
+        if (this.type == 'words') {
+
+            this.events.subscribe('word:created', (wordsParam) => {
+                console.log('type View: ' + this.type);
+                console.log('wordsParam',wordsParam);
+                if (wordsParam) {
+
+                    let that = this;
+                    this.events.unsubscribe('word:created');
+                    wordsParam.forEach(function (wordParam) {
+                        let currentWordIndex = that.currentWordList.findIndex(function (myWordElemnt) {
+                            return myWordElemnt.internalId == wordParam.internalId;
+                        });
+                        if (currentWordIndex == -1) { that.currentWordList.push(wordParam); }
+                    });
+                }
+            });
+
+            this.events.subscribe('word:deleted', (wordKey) => {
+                console.log('Deleted index: ' + wordKey);
+                if (wordKey) {
+
+                    let wordIndex = this.currentWordList.findIndex(
                         function (wordElemnt) {
-                            return wordElemnt.key == wordParam.key;
-                    });
-                this.currentWordList[wordIndex] = wordParam;
-                this.updatedFlag = false;
-                this.events.unsubscribe('word:updated');
-            }
-        });
+                            return wordElemnt.internalId == wordKey;
+                        });
+                    if (wordIndex > -1) { this.currentWordList.splice(wordIndex, 1); }
+                    this.events.unsubscribe('word:deleted');
+                }
+            });
 
-        this.events.subscribe('word:created', (wordParam) => {
-            if (wordParam && this.createdFlag) {
-                this.currentWordList.push(wordParam);
-                this.createdFlag = false;
-                this.events.unsubscribe('word:created');
-            }
-        });
+            this.events.subscribe('word:updated', (wordParam) => {
+                if (wordParam) {
 
-        this.events.subscribe('word:deleted', (wordKey) => {
-            if (wordKey && this.deletedFlag) {
-                
-                let wordIndex = this.currentWordList.findIndex(
-                    function (wordElemnt) {
-                        return wordElemnt.key == wordKey;
-                    });
-                this.currentWordList.splice(wordIndex, 1);
-                this.deletedFlag = false;
-                this.events.unsubscribe('word:deleted');
-            }
-        });
+                    let wordIndex = this.currentWordList.findIndex(
+                        function (wordElemnt) {
+                            return wordElemnt.internalId == wordParam.internalId;
+                        });
+                    if (wordIndex > -1) { this.currentWordList[wordIndex] = wordParam };
+                    this.events.unsubscribe('word:updated');
+                }
+            });
+        }
     }
 
     newWord() {
