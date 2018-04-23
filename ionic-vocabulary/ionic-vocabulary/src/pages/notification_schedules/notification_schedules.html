@@ -7,19 +7,68 @@
 <ion-header>
 
     <ion-navbar>
-        <ion-title>Configure your notifications</ion-title>
+        <ion-title>Words Reminder</ion-title>
     </ion-navbar>
-
-    <ion-buttons left>
-        <button ion-button icon-only (click)="dismiss()">
-            <span ion-text color="primary" showWhen="ios">Cancel</span>
-            <ion-icon name="arrow-back" showWhen="android,windows"></ion-icon>
-        </button>
-    </ion-buttons>
 
 </ion-header>
 
 
-<ion-content padding>
+<ion-content>
+
+    <ion-fab top right edge>
+        <button ion-fab color="secondary" (click)="addCustomReminder()">
+            <ion-icon name="add"></ion-icon>
+        </button>
+    </ion-fab>
+
+    <ion-list radio-group [(ngModel)]="typeReminder" >
+        <ion-list-header>
+            <strong>You can create custom reminders</strong>
+        </ion-list-header>
+
+        <ion-item>
+            <ion-label>Latest words</ion-label>
+            <ion-radio checked="true" value="latest"></ion-radio>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Random</ion-label>
+            <ion-radio value="random" ></ion-radio>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Verbs</ion-label>
+            <ion-radio value="verb" ></ion-radio>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Adjectives</ion-label>
+            <ion-radio value="adjective" ></ion-radio>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Nouns</ion-label>
+            <ion-radio value="noun" ></ion-radio>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Adverbs</ion-label>
+            <ion-radio value="adverb" ></ion-radio>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Phrase/Phrasal Verb</ion-label>
+            <ion-radio value="phrase" ></ion-radio>
+        </ion-item>
+
+    </ion-list>
+
+    <p text-center>
+        <button ion-button icon-left full (click)="setReminder()" >
+            <ion-icon name="notifications" >
+                Set Reminder
+            </ion-icon>
+        </button>
+    </p>
 
 </ion-content>

@@ -238,9 +238,7 @@ export class AutoCompletePage {
     }
 
     notificationsConfiguration() {
-        this.modalCtrl.create(
-            NotificationSchedulesPage
-        ).present();
+        this.navCtrl.push(NotificationSchedulesPage);
     }
 
     setWord(currentWord) {

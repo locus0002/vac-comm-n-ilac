@@ -16,6 +16,8 @@ import { FiltersPage } from '../pages/filters/filters';
 import { ShareP2PPage } from '../pages/share_p2p/share_p2p';
 import { WordViewPage } from '../pages/word_view/word_view';
 import { NotificationSchedulesPage } from '../pages/notification_schedules/notification_schedules';
+import { CustomReminderPage } from '../pages/custom_reminder/custom_reminder';
+import { AlarmsPage } from '../pages/alarms/alarms';
 
 @NgModule({
     declarations: [
@@ -31,7 +33,9 @@ import { NotificationSchedulesPage } from '../pages/notification_schedules/notif
         FiltersPage,
         ShareP2PPage,
         NotificationSchedulesPage,
-        WordViewPage
+        WordViewPage,
+        CustomReminderPage,
+        AlarmsPage
     ],
     imports: [
         IonicModule.forRoot(MyApp)
@@ -50,7 +54,9 @@ import { NotificationSchedulesPage } from '../pages/notification_schedules/notif
         FiltersPage,
         ShareP2PPage,
         NotificationSchedulesPage,
-        WordViewPage
+        WordViewPage,
+        CustomReminderPage,
+        AlarmsPage
     ],
     providers: [{ provide: ErrorHandler, useClass: IonicErrorHandler }, Push, Storage, Utils]
 })

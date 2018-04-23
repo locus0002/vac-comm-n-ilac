@@ -1,5 +1,6 @@
 ﻿import { Component } from '@angular/core';
-import { NavController, NavParams, ViewController } from 'ionic-angular';
+import { NavController, NavParams, ViewController, ModalController } from 'ionic-angular';
+import { CustomReminderPage } from '../custom_reminder/custom_reminder';
 
 /*
   Generated class for the notification_schedules page.
@@ -13,10 +14,17 @@ import { NavController, NavParams, ViewController } from 'ionic-angular';
 })
 export class NotificationSchedulesPage {
 
+    typeReminder: string = "";
+
     constructor(
                 public navCtrl: NavController,
                 public navParams: NavParams,
-                public viewCtrl:ViewController) { }
+                public viewCtrl:ViewController,
+                public modalCtrl: ModalController) { }
+
+    addCustomReminder() {
+        this.modalCtrl.create(CustomReminderPage).present();
+    }
 
     dismiss() {
         this.viewCtrl.dismiss();
@@ -24,6 +32,10 @@ export class NotificationSchedulesPage {
 
     ionViewDidLoad() {
         console.log('ionViewDidLoad notification_schedulesPage');
+    }
+
+    setReminder() {
+        console.log("TODO set reminder");
     }
 
 }
