@@ -6,3 +6,5 @@ export const WORD_TYPE = { 'Verb': 'V', 'Adjective': 'A', 'Noun': 'N', 'Adverb':
 export const WORD_TYPE_TEXT = { 'V': 'Verb', 'A': 'Adjective', 'N': 'Noun', 'B':'Adverb', 'P':'Phrase' };
 export const VIEW_TYPE = { 'EXAMPLE': 'E', 'DEFINITION': 'D' };
 export const VIEW_TYPE_LOW = { 'example': 'E', 'definition': 'D' };
+export const UNIT_MEASUREMENT_GROCERY = { 'Kilogram': 'kg', 'Gram': 'gr', 'Piece': 'pcs', 'Liter': 'L', 'Milliliter': 'mL', 'Pund': 'lb' };
+export const PRODUCT_STATUS = { 'READY': 1, 'ADDED': 2, 'BOUGHT':3 };

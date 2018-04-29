@@ -4,6 +4,7 @@ import { StatusBar, Splashscreen, Push, PushOptions, PushNotification } from 'io
 import { TabsPage } from '../pages/tabs/tabs';
 import { NewWordPage } from '../pages/new_word/new_word';
 import { AutoCompletePage } from '../pages/auto_complete/auto_complete';
+import { SupermarketListPage } from '../pages/supermarket_list/supermarket_list';
 
 @Component({
   templateUrl: 'app.html'
@@ -11,7 +12,8 @@ import { AutoCompletePage } from '../pages/auto_complete/auto_complete';
 export class MyApp {
     //rootPage = TabsPage;
     //rootPage = NewWordPage;
-    rootPage = AutoCompletePage;
+    //rootPage = AutoCompletePage;
+    rootPage = SupermarketListPage;
 
     constructor(
                 platform: Platform,

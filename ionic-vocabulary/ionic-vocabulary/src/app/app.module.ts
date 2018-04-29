@@ -18,6 +18,8 @@ import { WordViewPage } from '../pages/word_view/word_view';
 import { NotificationSchedulesPage } from '../pages/notification_schedules/notification_schedules';
 import { CustomReminderPage } from '../pages/custom_reminder/custom_reminder';
 import { AlarmsPage } from '../pages/alarms/alarms';
+import { SupermarketListPage } from '../pages/supermarket_list/supermarket_list';
+import { NewSupermarketProductPage } from '../pages/new_supermarket_product/new_supermarket_product';
 
 @NgModule({
     declarations: [
@@ -35,7 +37,9 @@ import { AlarmsPage } from '../pages/alarms/alarms';
         NotificationSchedulesPage,
         WordViewPage,
         CustomReminderPage,
-        AlarmsPage
+        AlarmsPage,
+        SupermarketListPage,
+        NewSupermarketProductPage
     ],
     imports: [
         IonicModule.forRoot(MyApp)
@@ -56,7 +60,9 @@ import { AlarmsPage } from '../pages/alarms/alarms';
         NotificationSchedulesPage,
         WordViewPage,
         CustomReminderPage,
-        AlarmsPage
+        AlarmsPage,
+        SupermarketListPage,
+        NewSupermarketProductPage
     ],
     providers: [{ provide: ErrorHandler, useClass: IonicErrorHandler }, Push, Storage, Utils]
 })
