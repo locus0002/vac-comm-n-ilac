@@ -42,8 +42,8 @@
             <strong>Products added</strong>
         </ion-list-header>
 
-        <button ion-item (click)="editProductAdded()" *ngFor="let currentProduct of myAddedProductList">
-            <ion-checkbox color="primary" checked="true" readonly="true" ></ion-checkbox>
+        <button ion-item *ngFor="let currentProduct of myAddedProductList; let i = index;">
+            <ion-checkbox color="primary" checked="true" (ionChange)="removeProduct(i)" ></ion-checkbox>
             <ion-label>
                 <h2>{{currentProduct.description}}</h2>
                 <p>{{currentProduct.quantity}} {{currentProduct.unitKey}}</p>

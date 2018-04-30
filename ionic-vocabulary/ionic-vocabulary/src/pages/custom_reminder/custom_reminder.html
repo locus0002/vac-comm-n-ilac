@@ -47,12 +47,15 @@
             <ion-icon name="alarm" item-left></ion-icon>
             <p>Time</p>
             <h2>
-                {{alarmElemnt}}
+                {{alarmElemnt.label}}
             </h2>
+            <button ion-button icon-only outline item-right icon-left clear (click)="showPopMenu(i, 'alarm', $event)" >
+                <ion-icon name="more"></ion-icon>
+            </button>
         </ion-item>
 
         <button ion-item (click)="setAlarms()" color="secondary">
-            Modify alarms
+            Add alarm
         </button>
     </ion-list>
 

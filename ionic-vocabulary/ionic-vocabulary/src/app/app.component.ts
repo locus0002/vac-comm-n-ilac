@@ -12,8 +12,8 @@ import { SupermarketListPage } from '../pages/supermarket_list/supermarket_list'
 export class MyApp {
     //rootPage = TabsPage;
     //rootPage = NewWordPage;
-    //rootPage = AutoCompletePage;
-    rootPage = SupermarketListPage;
+    //rootPage = SupermarketListPage;
+    rootPage = AutoCompletePage;
 
     constructor(
                 platform: Platform,

@@ -94,9 +94,10 @@ export class SupermarketListPage {
                 this.myAddedProductList = [];
                 this.myProductList = [];
                 loadingBox.dismiss();
-            }
-            );
-
+            });
+        /*
+         * TODO Creating a historial of my purchases
+         */
     }
 
     ionViewDidLoad() {
@@ -109,6 +110,14 @@ export class SupermarketListPage {
         this.storage.set("PRODUCTS", this.myProductHistorial);
         this.myAddedProductList.push(this.myProductList[productIndex]);
         this.myProductList.splice(productIndex, 1);
+    }
+
+    removeProduct(productIndex: number) {
+
+        this.myProductHistorial[this.myProductList[productIndex].index].status = Constants.PRODUCT_STATUS.READY;
+        this.storage.set("PRODUCTS", this.myProductHistorial);
+        this.myProductList.push(this.myAddedProductList[productIndex]);
+        this.myAddedProductList.splice(productIndex, 1);
     }
 
 }

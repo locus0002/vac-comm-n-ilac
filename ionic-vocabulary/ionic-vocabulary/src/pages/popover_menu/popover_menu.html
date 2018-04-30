@@ -9,11 +9,11 @@
 
     <ion-list>
         <!-- POPOVER MENU of New Word -->
-        <button ion-item (click)="editElement()" *ngIf="typeView == 'autocomplete'">
+        <button ion-item (click)="editElement()" *ngIf="typeView == 'autocomplete' || typeView == 'reminder'">
             <ion-icon name="create" item-left></ion-icon>
             Edit
         </button>
-        <button ion-item (click)="deleteElement()" outline *ngIf="typeView == 'autocomplete'">
+        <button ion-item (click)="deleteElement()" outline *ngIf="typeView == 'autocomplete' || typeView == 'reminder'">
             <ion-icon name="trash" item-left color="danger"></ion-icon>
             Delete
         </button>

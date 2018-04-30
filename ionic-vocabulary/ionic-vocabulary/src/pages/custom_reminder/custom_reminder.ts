@@ -1,8 +1,8 @@
 ﻿import { Component } from '@angular/core';
-import { NavController, NavParams, ActionSheetController, ViewController } from 'ionic-angular';
+import { NavController, NavParams, ActionSheetController, ViewController, PopoverController, AlertController, ModalController } from 'ionic-angular';
 import { AlarmsPage } from '../alarms/alarms';
 import { AutoCompletePage } from '../auto_complete/auto_complete';
-
+import { PopoverMenuPage } from '../popover_menu/popover_menu';
 /*
   Generated class for the custom_reminder page.
 
@@ -17,16 +17,39 @@ export class CustomReminderPage {
 
     txtReminderName: string;
     txtNumberWords: number = 3;
-    alarmList: Array<string> = [];
+    alarmList: Array<{label:string, value:string}> = [];
     wordList: Array<string> = [];
 
     constructor(
                 public navCtrl: NavController, 
                 public navParams: NavParams,
                 public actionSheetCtrl:ActionSheetController,
-                public viewCtrl: ViewController) {
+                public viewCtrl: ViewController,
+                public popoverCtrl: PopoverController,
+                public alertCtrl:AlertController,
+                public modalCtrl:ModalController) {
 
         this.setDefaultTime();
+    }
+
+    deleteAlarm(alarmIndex: number) {
+
+        this.alertCtrl.create({
+            title: 'Delete Alarm',
+            message: 'Are you sure that you would like to delete this alarm?',
+            buttons: [
+                {
+                    text: 'Cancel',
+                    role:'cancel'
+                },
+                {
+                    text: 'Delete',
+                    handler: () => {
+                        this.alarmList.splice(alarmIndex, 1);
+                    }
+                }
+            ]
+        }).present();
     }
 
     dismiss() {
@@ -38,7 +61,7 @@ export class CustomReminderPage {
     }
 
     setAlarms() {
-        console.log("TODO set alarms");
+        this.modalCtrl.create(AlarmsPage, { alarmList: this.alarmList }).present();
     }
 
     setWords() {
@@ -46,9 +69,9 @@ export class CustomReminderPage {
     }
 
     setDefaultTime() {
-        this.alarmList.push("10:30 AM");
-        this.alarmList.push("02:30 PM");
-        this.alarmList.push("06:30 AM");
+        this.alarmList.push({ label: "10:30 AM", value: "10:00" });
+        this.alarmList.push({ label: "02:30 PM", value: "14:30" });
+        this.alarmList.push({ label: "06:30 AM", value: "18:30" });
     }
 
     setNumberWords() {
@@ -78,6 +101,19 @@ export class CustomReminderPage {
                 }
             ]
         }).present();
+    }
+
+    showPopMenu(index:number, type:string, myEvent:any) {
+
+        this.popoverCtrl.create(
+            PopoverMenuPage,
+            {
+                index: index,
+                type: type,
+                typeView: 'reminder',
+                parent: this
+            }
+        ).present({ ev: myEvent });
     }
 
 }

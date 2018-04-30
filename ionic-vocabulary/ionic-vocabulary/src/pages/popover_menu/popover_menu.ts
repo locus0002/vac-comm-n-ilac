@@ -45,6 +45,10 @@ export class PopoverMenuPage {
                 this.viewCtrl.dismiss();
                 this.parentPage.deleteExample(this.indexElement);
                 break;
+            case 'alarm':
+                this.viewCtrl.dismiss();
+                this.parentPage.deleteAlarm(this.indexElement);
+                break;
         }
     }
 

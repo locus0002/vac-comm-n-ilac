@@ -27,4 +27,31 @@ export class Utils {
         }
         return '';
     }
+
+    getHourLabel(data: string) {
+
+        if (data) {
+
+            let timeData = data.split(":"),
+                hours = parseInt(timeData[0]),
+                minutes = timeData[1],
+                stringTime = "";
+
+            if (hours < 12) {
+                //AM
+                let hourString = hours.toString();
+                stringTime = (hourString.length == 1 ? '0' + hourString : hourString) + ':' + (minutes.length == 1 ? '0' + minutes : minutes) + ' AM';
+
+            } else {
+                //PM
+                hours -= 12;
+                if (hours == 0) { hours = 12; }
+                let hourString = hours.toString();
+                stringTime = (hourString.length == 1 ? '0' + hourString : hourString) + ':' + (minutes.length == 1 ? '0' + minutes : minutes) + ' PM';
+            }
+
+            return stringTime;
+        }
+        return "";
+    }
 }

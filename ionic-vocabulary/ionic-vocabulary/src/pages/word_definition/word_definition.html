@@ -9,7 +9,7 @@
     <ion-navbar>
         <ion-title>{{title}}</ion-title>
         <ion-buttons start>
-            <button ion-button (click)="dismiss()">
+            <button ion-button icon-only (click)="dismiss()">
                 <span ion-text color="primary" showWhen="ios">Cancel</span>
                 <ion-icon name="md-close" showWhen="android,windows"></ion-icon>
             </button>
@@ -23,23 +23,23 @@
 
     <ion-list>
 
-        <ion-item *ngIf="type == 'D'">
+        <button ion-item *ngIf="type == 'D'" (click)="showTypeWordMenu()">
             <ion-icon name="information-circle" item-left></ion-icon>
             <ion-input type="text" readonly="true" placeholder="Type" [(ngModel)]="txtNewWordType"></ion-input>
-            <button ion-button outline item-right icon-left clear (click)="showTypeWordMenu()">
-                <ion-icon name="create"></ion-icon>
-            </button>
-        </ion-item>
+        </button>
 
         <ion-item text-wrap>
             <ion-icon name="information-circle" item-left></ion-icon>
             <ion-textarea type="text" [placeholder]="placeHolder" [(ngModel)]="txtDefinition"></ion-textarea>
         </ion-item>
 
-        <button ion-item (click)="addDefinition()" color="secondary">
+    </ion-list>
+
+    <p text-center>
+        <button ion-button icon-left full (click)="addDefinition()" color="secondary">
+            <ion-icon name="add"></ion-icon>
             Add
         </button>
-
-    </ion-list>
+    </p>
 
 </ion-content>

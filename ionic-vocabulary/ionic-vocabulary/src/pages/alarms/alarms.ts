@@ -1,5 +1,6 @@
 ﻿import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, ViewController, AlertController } from 'ionic-angular';
+import { Utils } from '../../services/utils';
 
 /*
   Generated class for the alarms page.
@@ -13,10 +14,41 @@ import { NavController, NavParams } from 'ionic-angular';
 })
 export class AlarmsPage {
 
-    constructor(public navCtrl: NavController, public navParams: NavParams) { }
+    txtTime: string;
+    alarmList: Array<{ label: string, value: string }>;
+
+    constructor(
+                public navCtrl: NavController,
+                public navParams: NavParams,
+                public viewCtrl: ViewController,
+                public alertCtrl: AlertController,
+                public utilsCtrl: Utils) {
+
+        this.alarmList = this.navParams.get("alarmList") || [];
+    }
 
     ionViewDidLoad() {
         console.log('ionViewDidLoad alarmsPage');
+    }
+
+    dismiss() {
+        this.viewCtrl.dismiss();
+    }
+
+    setAlarm() {
+
+        if (this.txtTime) {
+
+            this.alarmList.push({ label: this.utilsCtrl.getHourLabel(this.txtTime), value: this.txtTime });
+            this.dismiss();
+        } else {
+
+            this.alertCtrl.create({
+                title: 'Validate',
+                message: 'You need to set the time of the notification',
+                buttons: ['Accept']
+            }).present();
+        }
     }
 
 }
