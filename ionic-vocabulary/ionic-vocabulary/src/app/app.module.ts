@@ -64,6 +64,6 @@ import { NewSupermarketProductPage } from '../pages/new_supermarket_product/new_
         SupermarketListPage,
         NewSupermarketProductPage
     ],
-    providers: [{ provide: ErrorHandler, useClass: IonicErrorHandler }, Push, Storage, Utils]
+    providers: [{ provide: ErrorHandler, useClass: IonicErrorHandler }, Push, Storage, Utils ]
 })
 export class AppModule {}

@@ -104,4 +104,5 @@
     <variable name="SENDER_ID" value="728267144284" />
   </plugin>
   <plugin name="cordova-plugin-nativestorage" spec="~2.3.1" />
+  <plugin name="cordova-plugin-app-event" spec="~1.2.1" />
 </widget>

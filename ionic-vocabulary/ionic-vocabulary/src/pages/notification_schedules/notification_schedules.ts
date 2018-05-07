@@ -1,6 +1,7 @@
 ﻿import { Component } from '@angular/core';
 import { NavController, NavParams, ViewController, ModalController } from 'ionic-angular';
 import { CustomReminderPage } from '../custom_reminder/custom_reminder';
+//import { LocalNotifications } from 'ionic-native';
 
 /*
   Generated class for the notification_schedules page.
@@ -14,16 +15,43 @@ import { CustomReminderPage } from '../custom_reminder/custom_reminder';
 })
 export class NotificationSchedulesPage {
 
+    notifyTime: any;
+    notifications: any[] = [];
+    days: any[];
+    chosenHours: number;
+    chosenMinutes: number;
+
     typeReminder: string = "";
 
     constructor(
                 public navCtrl: NavController,
                 public navParams: NavParams,
                 public viewCtrl:ViewController,
-                public modalCtrl: ModalController) { }
+                public modalCtrl: ModalController) { 
+
+        this.testNofitication();
+    }
+
+    testNofitication() {
+
+        let myNotTime = new Date();
+        myNotTime.setMinutes(myNotTime.getMinutes() + 1);
+        this.notifyTime = new Date();
+        this.chosenHours = new Date().getHours();
+        this.chosenMinutes = new Date().getMinutes();
+        /*LocalNotifications.schedule(
+            {
+                id: 1,
+                title: 'Hey!',
+                text: 'Colas',
+                at: myNotTime
+            }
+        );*/
+    }
 
     addCustomReminder() {
         this.modalCtrl.create(CustomReminderPage).present();
+        
     }
 
     dismiss() {

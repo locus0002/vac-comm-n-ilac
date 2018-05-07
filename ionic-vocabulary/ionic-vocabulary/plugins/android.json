@@ -31,6 +31,9 @@
         },
         "cordova-plugin-nativestorage": {
             "PACKAGE_NAME": "io.cordova.myapp95d2fa"
+        },
+        "cordova-plugin-app-event": {
+            "PACKAGE_NAME": "io.cordova.myapp95d2fa"
         }
     },
     "dependent_plugins": {}

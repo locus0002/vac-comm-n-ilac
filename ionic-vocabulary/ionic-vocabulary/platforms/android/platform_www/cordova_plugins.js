@@ -70,7 +70,8 @@ module.exports.metadata =
     "cordova-plugin-device": "1.1.4",
     "cordova-plugin-splashscreen": "4.0.3",
     "phonegap-plugin-push": "1.8.2",
-    "cordova-plugin-nativestorage": "2.3.1"
+    "cordova-plugin-nativestorage": "2.3.1",
+    "cordova-plugin-app-event": "1.2.1"
 };
 // BOTTOM OF METADATA
 });
