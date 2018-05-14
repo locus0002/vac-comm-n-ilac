@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Ionic Blank
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <br />
+  <button ion-button full (click)="testFacebook()" >
+    Facebook
+  </button>
+
+  <br />
+  <button ion-button full (click)="testQRScanner()" >
+    QR Scan
+  </button>
+
+  <br />
+  <button ion-button full (click)="testCreateQRCode()" >
+    Generate QR Code
+  </button>
+
+  <div *ngIf="createdCode" >
+    <ngx-qrcode [qrc-value]="createdCode" ></ngx-qrcode>
+    <p>
+      Value: {{createdCode}}
+    </p>
+  </div>
+
+  <br />
+  <button ion-button full (click)="testDownloadImages(1)" >
+    Download Images
+  </button>
+
+  <button ion-button full (click)="testDownloadImages(1)" >
+      Download Images
+    </button>
+
+  <br />
+  <button ion-button full (click)="tesOpenMaps()" >
+    Maps
+  </button>
+
+  <ion-card *ngFor="let currentTeam of currentTeams" >
+    <ion-item text-wrap>
+      <ion-thumbnail item-left >
+        <img [src]="currentTeam.imagePath" />
+      </ion-thumbnail>
+      <h2>Team: {{currentTeam.teamName}}</h2>
+      <p>Points: {{currentTeam.points}}</p>
+      <p>Difference: {{currentTeam.difference}}</p>
+    </ion-item>
+  </ion-card>
+</ion-content>
